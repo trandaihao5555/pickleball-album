@@ -255,6 +255,97 @@
     margin:18px 0 8px;
   }
 
+  /* ---------- TOURNAMENT GROUPS ---------- */
+  .groups-section{
+    width:100%;
+    max-width:1180px;
+    margin:0 auto;
+    padding:52px 24px 6px;
+  }
+  .groups-section .section-head{ justify-content:center; }
+  .group-grid{
+    display:grid;
+    grid-template-columns:repeat(3, minmax(0, 1fr));
+    gap:18px;
+  }
+  .group-card{
+    background:rgba(20,97,90,0.72);
+    border:1px solid rgba(247,244,236,0.16);
+    border-radius:14px;
+    overflow:hidden;
+  }
+  .group-card h3{
+    padding:14px 18px;
+    background:var(--court-teal-light);
+    color:var(--chalk);
+    font-family:'Anton', sans-serif;
+    font-size:20px;
+    font-weight:400;
+    letter-spacing:0.05em;
+    text-align:center;
+    text-transform:uppercase;
+  }
+  .group-team-list{ list-style:none; padding:8px 18px 14px; }
+  .group-team-list li{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:11px 0;
+    border-bottom:1px solid rgba(247,244,236,0.1);
+    color:var(--chalk-dim);
+    font-size:14px;
+    font-weight:700;
+  }
+  .group-team-list li:last-child{ border-bottom:0; }
+  .group-team-list li::before{
+    content:'🏓';
+    font-size:14px;
+  }
+  .group-team-input{
+    width:100%;
+    background:rgba(247,244,236,0.08);
+    border:1px dashed rgba(247,244,236,0.4);
+    border-radius:6px;
+    color:var(--chalk);
+    font:700 14px 'Manrope', sans-serif;
+    padding:7px 9px;
+  }
+  .group-team-input:focus{ outline:none; border-color:var(--pickle-yellow); }
+  .group-ranking{ width:100%; border-collapse:collapse; margin-top:4px; font-size:12px; color:var(--chalk-dim); }
+  .group-ranking th, .group-ranking td{ padding:8px 7px; border-top:1px solid rgba(247,244,236,0.1); text-align:center; }
+  .group-ranking th{ color:var(--pickle-yellow); font-family:'Space Mono', monospace; font-size:10px; letter-spacing:0.04em; }
+  .group-ranking th:nth-child(2), .group-ranking td:nth-child(2){ text-align:left; }
+  .rank-number{ color:var(--pickle-yellow); font-weight:800; }
+  .match-editor{ margin-top:24px; padding:22px; background:rgba(10,33,30,0.25); border:1px solid rgba(247,244,236,0.16); border-radius:14px; }
+  .match-editor-title{ color:var(--chalk); font-family:'Anton', sans-serif; font-size:19px; font-weight:400; letter-spacing:0.04em; margin:20px 0 10px; text-transform:uppercase; }
+  .match-editor-title:first-child{ margin-top:0; }
+  .match-row{ display:grid; grid-template-columns:minmax(0, 1fr) 52px 18px 52px minmax(0, 1fr); align-items:center; gap:8px; padding:9px 0; border-top:1px solid rgba(247,244,236,0.1); color:var(--chalk-dim); font-size:13px; }
+  .match-row span:first-child{ text-align:right; }
+  .score-input{ width:100%; padding:7px 4px; background:rgba(247,244,236,0.08); border:1px dashed rgba(247,244,236,0.4); border-radius:6px; color:var(--chalk); font:700 14px 'Space Mono', monospace; text-align:center; }
+  .score-input:focus{ outline:none; border-color:var(--pickle-yellow); }
+
+  /* ---------- KNOCKOUT BRACKET ---------- */
+  .knockout-section{ width:100%; max-width:1180px; margin:0 auto; padding:52px 24px 6px; }
+  .knockout-section .section-head{ justify-content:center; }
+  .bracket{ display:grid; grid-template-columns:210px 210px 210px; justify-content:center; gap:70px; align-items:stretch; }
+  .bracket-stage{ display:flex; flex-direction:column; align-items:center; gap:14px; }
+  .bracket-stage-title{ color:var(--pickle-yellow); font-family:'Space Mono', monospace; font-size:11px; letter-spacing:0.08em; text-align:center; text-transform:uppercase; }
+  .bracket-stage.semifinals{ justify-content:space-around; padding:45px 0; }
+  .bracket-stage.finals{ justify-content:center; }
+  .bracket-match{ width:100%; max-width:210px; background:rgba(20,97,90,0.72); border:1px solid rgba(247,244,236,0.16); border-radius:12px; overflow:hidden; }
+  .bracket-match.has-next{ position:relative; }
+  .bracket-match.has-next::after{ content:''; position:absolute; z-index:0; top:50%; right:-70px; width:70px; border-top:2px solid rgba(231,210,46,0.65); }
+  .bracket-match.has-next::before{ content:attr(data-next); position:absolute; z-index:1; top:calc(50% - 19px); right:-65px; width:60px; color:var(--pickle-yellow); font:9px 'Space Mono', monospace; text-align:center; white-space:nowrap; }
+  .bracket-match-id{ display:block; padding:7px 11px; background:rgba(10,33,30,0.35); color:var(--pickle-yellow); font-family:'Space Mono', monospace; font-size:10px; letter-spacing:0.05em; }
+  .bracket-team{ display:flex; align-items:center; justify-content:space-between; gap:8px; padding:10px 12px; border-top:1px solid rgba(247,244,236,0.1); color:var(--chalk); font-size:13px; font-weight:700; }
+  .bracket-team.placeholder{ color:var(--chalk-dim); font-weight:500; font-style:italic; }
+  .bracket-match.final{ border-color:var(--pickle-yellow); }
+  .bracket-match.final .bracket-match-id{ background:rgba(231,210,46,0.13); }
+  .bracket-score{ color:var(--pickle-yellow); font-family:'Space Mono', monospace; font-size:14px; }
+  .bracket-score-input{ width:38px; padding:4px 2px; background:rgba(247,244,236,0.08); border:1px dashed rgba(247,244,236,0.4); border-radius:5px; color:var(--chalk); font:700 13px 'Space Mono', monospace; text-align:center; }
+  .bracket-score-input:focus{ outline:none; border-color:var(--pickle-yellow); }
+  .knockout-actions{ text-align:center; margin-top:18px; }
+
   /* ---------- GALLERY SECTION ---------- */
   .gallery-section{
     max-width:1180px;
@@ -612,6 +703,14 @@
     .board{ padding:24px 16px; }
     .grid{ gap:26px 18px; grid-template-columns:repeat(auto-fill, minmax(150px, 1fr)); }
     .leaderboard-section{ padding:40px 24px 6px; }
+    .groups-section{ padding:40px 24px 6px; }
+    .group-grid{ grid-template-columns:1fr; }
+    .knockout-section{ padding:40px 24px 6px; }
+    .bracket{ grid-template-columns:1fr; }
+    .bracket-stage.semifinals{ padding:0; }
+    .bracket-match.has-next::after{ display:none; }
+    .match-editor{ padding:16px; }
+    .match-row{ grid-template-columns:minmax(0, 1fr) 42px 14px 42px minmax(0, 1fr); gap:5px; font-size:11px; }
     .medal-row{ gap:12px; }
     .medal-row.silver .medal-card,
     .medal-row.bronze .medal-card{
@@ -677,6 +776,61 @@
   </div>
 </section>
 
+<section class="groups-section" aria-labelledby="groupsTitle">
+  <div class="section-head">
+    <h2 class="section-title" id="groupsTitle">Bảng đấu</h2>
+    <button class="btn btn-edit" id="editGroupsBtn" style="display:none;">✎ Chỉnh sửa</button>
+  </div>
+
+  <div class="group-grid">
+    <article class="group-card">
+      <h3>Bảng A</h3>
+      <ul class="group-team-list" id="groupARow"></ul>
+      <table class="group-ranking" id="groupARanking"></table>
+    </article>
+    <article class="group-card">
+      <h3>Bảng B</h3>
+      <ul class="group-team-list" id="groupBRow"></ul>
+      <table class="group-ranking" id="groupBRanking"></table>
+    </article>
+    <article class="group-card">
+      <h3>Bảng C</h3>
+      <ul class="group-team-list" id="groupCRow"></ul>
+      <table class="group-ranking" id="groupCRanking"></table>
+    </article>
+  </div>
+  <div class="match-editor" id="matchEditor" style="display:none;"></div>
+  <div class="leaderboard-actions" id="saveGroupsWrap" style="display:none;">
+    <button class="btn btn-primary" id="saveGroupsBtn">Lưu bảng đấu</button>
+  </div>
+</section>
+
+<section class="knockout-section" aria-labelledby="knockoutTitle">
+  <div class="section-head">
+    <h2 class="section-title" id="knockoutTitle">Vòng loại trực tiếp</h2>
+    <button class="btn btn-edit" id="editKnockoutBtn" style="display:none;">✎ Chỉnh sửa</button>
+  </div>
+  <div class="bracket">
+    <div class="bracket-stage">
+      <div class="bracket-stage-title">Tứ kết</div>
+      <div class="bracket-match has-next" data-next="Thắng TK1"><span class="bracket-match-id">TK1</span><div class="bracket-team" id="qf1a"></div><div class="bracket-team" id="qf1b"></div></div>
+      <div class="bracket-match has-next" data-next="Thắng TK2"><span class="bracket-match-id">TK2</span><div class="bracket-team" id="qf2a"></div><div class="bracket-team" id="qf2b"></div></div>
+      <div class="bracket-match has-next" data-next="Thắng TK3"><span class="bracket-match-id">TK3</span><div class="bracket-team" id="qf3a"></div><div class="bracket-team" id="qf3b"></div></div>
+      <div class="bracket-match has-next" data-next="Thắng TK4"><span class="bracket-match-id">TK4</span><div class="bracket-team" id="qf4a"></div><div class="bracket-team" id="qf4b"></div></div>
+    </div>
+    <div class="bracket-stage semifinals">
+      <div class="bracket-stage-title">Bán kết</div>
+      <div class="bracket-match has-next" data-next="Thắng BK1"><span class="bracket-match-id">BK1</span><div class="bracket-team" id="sf1a"></div><div class="bracket-team" id="sf1b"></div></div>
+      <div class="bracket-match has-next" data-next="Thắng BK2"><span class="bracket-match-id">BK2</span><div class="bracket-team" id="sf2a"></div><div class="bracket-team" id="sf2b"></div></div>
+    </div>
+    <div class="bracket-stage finals">
+      <div class="bracket-stage-title">Chung kết</div>
+      <div class="bracket-match final"><span class="bracket-match-id">Chung kết</span><div class="bracket-team" id="finala"></div><div class="bracket-team" id="finalb"></div></div>
+    </div>
+  </div>
+  <div class="knockout-actions" id="saveKnockoutWrap" style="display:none;"><button class="btn btn-primary" id="saveKnockoutBtn">Lưu kết quả</button></div>
+</section>
+
 <main class="gallery-section">
   <div class="section-head">
     <h2 class="section-title">Album kỷ niệm</h2>
@@ -740,7 +894,7 @@
     <h3>Quản trị viên</h3>
 
     <div id="adminSetupState">
-      <p class="modal-hint">Trang chưa có mật khẩu quản trị. Đặt mật khẩu để chỉ mình bạn có quyền thêm ảnh và chỉnh bảng xếp hạng — mọi người khác chỉ xem được.</p>
+      <p class="modal-hint">Trang chưa có mật khẩu quản trị. Đặt mật khẩu để chỉ mình bạn có quyền thêm ảnh, chỉnh bảng xếp hạng và bảng đấu — mọi người khác chỉ xem được.</p>
       <div class="field">
         <label>Mật khẩu mới</label>
         <input type="password" id="adminNewPass" placeholder="Tối thiểu 4 ký tự">
@@ -757,7 +911,7 @@
     </div>
 
     <div id="adminLoginState" style="display:none;">
-      <p class="modal-hint">Nhập mật khẩu quản trị để bật quyền thêm ảnh và chỉnh bảng xếp hạng.</p>
+      <p class="modal-hint">Nhập mật khẩu quản trị để bật quyền thêm ảnh, chỉnh bảng xếp hạng và bảng đấu.</p>
       <div class="field">
         <label>Mật khẩu quản trị</label>
         <input type="password" id="adminLoginPass">
@@ -819,6 +973,18 @@
         const doc = await db.collection('settings').doc('leaderboard').get();
         return doc.exists ? { value: JSON.stringify(doc.data().teams || []) } : null;
       }
+      if(key === 'groups:teams'){
+        const doc = await db.collection('settings').doc('groups').get();
+        return doc.exists ? { value: JSON.stringify(doc.data().teams || []) } : null;
+      }
+      if(key === 'groups:matches'){
+        const doc = await db.collection('settings').doc('groups').get();
+        return doc.exists ? { value: JSON.stringify(doc.data().matches || {}) } : null;
+      }
+      if(key === 'knockout:matches'){
+        const doc = await db.collection('settings').doc('knockout').get();
+        return doc.exists ? { value: JSON.stringify(doc.data().matches || {}) } : null;
+      }
       if(key === 'admin:password'){
         const doc = await db.collection('settings').doc('admin').get();
         return doc.exists ? { value: doc.data().password } : null;
@@ -836,6 +1002,12 @@
           /* Photos are queried directly from Firestore, so no separate index is needed. */
         }else if(key === 'leaderboard:teams'){
           await db.collection('settings').doc('leaderboard').set({ teams: JSON.parse(value) });
+        }else if(key === 'groups:teams'){
+          await db.collection('settings').doc('groups').set({ teams: JSON.parse(value) }, { merge:true });
+        }else if(key === 'groups:matches'){
+          await db.collection('settings').doc('groups').set({ matches: JSON.parse(value) }, { merge:true });
+        }else if(key === 'knockout:matches'){
+          await db.collection('settings').doc('knockout').set({ matches: JSON.parse(value) });
         }else if(key === 'admin:password'){
           await db.collection('settings').doc('admin').set({ password: value });
         }else{
@@ -1220,6 +1392,339 @@
 
   loadLeaderboard();
 
+  /* ---------- TOURNAMENT GROUPS ---------- */
+  const GROUPS = [
+    { key:'A', row:'groupARow', count:4 },
+    { key:'B', row:'groupBRow', count:4 },
+    { key:'C', row:'groupCRow', count:3 }
+  ];
+  const GROUP_TEAM_SLOTS = 11;
+
+  let groupTeams = new Array(GROUP_TEAM_SLOTS).fill('');
+  let groupMatches = {};
+  let groupsEditMode = false;
+
+  const editGroupsBtn = document.getElementById('editGroupsBtn');
+  const saveGroupsWrap = document.getElementById('saveGroupsWrap');
+  const saveGroupsBtn = document.getElementById('saveGroupsBtn');
+  const matchEditor = document.getElementById('matchEditor');
+
+  function defaultGroupTeamName(groupKey, idx){ return 'Đội ' + groupKey + (idx + 1); }
+
+  function groupOffset(groupKey){
+    return GROUPS.slice(0, GROUPS.findIndex(group=>group.key === groupKey)).reduce((sum, group)=>sum + group.count, 0);
+  }
+
+  function groupMatchesFor(group){
+    const matches = [];
+    for(let a=0; a<group.count; a++){
+      for(let b=a+1; b<group.count; b++) matches.push({ id:group.key + '-' + a + '-' + b, a, b });
+    }
+    return matches;
+  }
+
+  function groupTeamName(group, localIdx){
+    const idx = groupOffset(group.key) + localIdx;
+    return groupTeams[idx] || defaultGroupTeamName(group.key, localIdx);
+  }
+
+  function rankingFor(group){
+    const ranking = Array.from({length:group.count}, (_, idx)=>({ idx, played:0, wins:0, pointsFor:0, pointsAgainst:0 }));
+    groupMatchesFor(group).forEach(match=>{
+      const score = groupMatches[match.id];
+      if(!score || !Number.isFinite(score.a) || !Number.isFinite(score.b) || score.a === score.b) return;
+      const first = ranking[match.a], second = ranking[match.b];
+      first.played++; second.played++;
+      first.pointsFor += score.a; first.pointsAgainst += score.b;
+      second.pointsFor += score.b; second.pointsAgainst += score.a;
+      if(score.a > score.b) first.wins++; else second.wins++;
+    });
+
+    // Các đội bằng số trận thắng và hiệu số sẽ được xét bảng phụ đối đầu trực tiếp.
+    const tiedGroups = new Map();
+    ranking.forEach(team=>{
+      const key = team.wins + ':' + (team.pointsFor - team.pointsAgainst);
+      if(!tiedGroups.has(key)) tiedGroups.set(key, []);
+      tiedGroups.get(key).push(team.idx);
+    });
+    const headToHead = {};
+    tiedGroups.forEach(indices=>{
+      indices.forEach(idx=>{ headToHead[idx] = { wins:0, diff:0 }; });
+      groupMatchesFor(group).forEach(match=>{
+        if(!indices.includes(match.a) || !indices.includes(match.b)) return;
+        const score = groupMatches[match.id];
+        if(!score || !Number.isFinite(score.a) || !Number.isFinite(score.b) || score.a === score.b) return;
+        headToHead[match.a].diff += score.a - score.b;
+        headToHead[match.b].diff += score.b - score.a;
+        if(score.a > score.b) headToHead[match.a].wins++; else headToHead[match.b].wins++;
+      });
+    });
+    return ranking.sort((a,b)=>
+      b.wins - a.wins ||
+      (b.pointsFor-b.pointsAgainst) - (a.pointsFor-a.pointsAgainst) ||
+      headToHead[b.idx].wins - headToHead[a.idx].wins ||
+      headToHead[b.idx].diff - headToHead[a.idx].diff ||
+      a.idx - b.idx
+    );
+  }
+
+  function renderGroupRanking(group){
+    const table = document.getElementById('group' + group.key + 'Ranking');
+    const rows = rankingFor(group);
+    table.innerHTML = '<thead><tr><th>#</th><th>Đội</th><th>ST</th><th>Thắng</th><th>HS</th></tr></thead><tbody>' +
+      rows.map((team, rank)=> '<tr><td class="rank-number">' + (rank + 1) + '</td><td>' + escapeHtml(groupTeamName(group, team.idx)) + '</td><td>' + team.played + '</td><td>' + team.wins + '</td><td>' + (team.pointsFor - team.pointsAgainst > 0 ? '+' : '') + (team.pointsFor - team.pointsAgainst) + '</td></tr>').join('') +
+      '</tbody>';
+  }
+
+  function rankedTeamName(groupKey, rank){
+    const group = GROUPS.find(item=>item.key === groupKey);
+    const team = rankingFor(group)[rank - 1];
+    return team ? groupTeamName(group, team.idx) : 'Chờ xác định';
+  }
+
+  let knockoutMatches = {};
+  let knockoutEditMode = false;
+  const editKnockoutBtn = document.getElementById('editKnockoutBtn');
+  const saveKnockoutWrap = document.getElementById('saveKnockoutWrap');
+  const saveKnockoutBtn = document.getElementById('saveKnockoutBtn');
+
+  function matchWinner(matchId, teams){
+    const score = knockoutMatches[matchId];
+    if(!score || !Number.isFinite(score.a) || !Number.isFinite(score.b) || score.a === score.b) return null;
+    return score.a > score.b ? teams[0] : teams[1];
+  }
+
+  function renderKnockoutSlot(id, name, matchId, side, available, fallback){
+    const slot = document.getElementById(id);
+    const score = knockoutMatches[matchId] || {};
+    const value = Number.isFinite(score[side]) ? score[side] : '';
+    slot.className = 'bracket-team' + (available ? '' : ' placeholder');
+    if(knockoutEditMode && available){
+      slot.innerHTML = '<span>' + escapeHtml(name) + '</span><input class="bracket-score-input" data-match="' + matchId + '" data-side="' + side + '" type="number" min="0" value="' + value + '">';
+    }else{
+      slot.innerHTML = '<span>' + escapeHtml(available ? name : fallback) + '</span>' + (available && value !== '' ? '<b class="bracket-score">' + value + '</b>' : '');
+    }
+  }
+
+  function renderKnockout(){
+    const qf = {
+      qf1:[rankedTeamName('A', 1), rankedTeamName('B', 3)],
+      qf2:[rankedTeamName('C', 1), rankedTeamName('B', 2)],
+      qf3:[rankedTeamName('B', 1), rankedTeamName('A', 3)],
+      qf4:[rankedTeamName('A', 2), rankedTeamName('C', 2)]
+    };
+    const sf1 = [matchWinner('qf1', qf.qf1), matchWinner('qf2', qf.qf2)];
+    const sf2 = [matchWinner('qf3', qf.qf3), matchWinner('qf4', qf.qf4)];
+    const final = [matchWinner('sf1', sf1), matchWinner('sf2', sf2)];
+    const slots = [
+      ['qf1a', qf.qf1[0], 'qf1', 'a', true, ''], ['qf1b', qf.qf1[1], 'qf1', 'b', true, ''],
+      ['qf2a', qf.qf2[0], 'qf2', 'a', true, ''], ['qf2b', qf.qf2[1], 'qf2', 'b', true, ''],
+      ['qf3a', qf.qf3[0], 'qf3', 'a', true, ''], ['qf3b', qf.qf3[1], 'qf3', 'b', true, ''],
+      ['qf4a', qf.qf4[0], 'qf4', 'a', true, ''], ['qf4b', qf.qf4[1], 'qf4', 'b', true, ''],
+      ['sf1a', sf1[0], 'sf1', 'a', !!sf1[0], 'Thắng TK1'], ['sf1b', sf1[1], 'sf1', 'b', !!sf1[1], 'Thắng TK2'],
+      ['sf2a', sf2[0], 'sf2', 'a', !!sf2[0], 'Thắng TK3'], ['sf2b', sf2[1], 'sf2', 'b', !!sf2[1], 'Thắng TK4'],
+      ['finala', final[0], 'final', 'a', !!final[0], 'Thắng BK1'], ['finalb', final[1], 'final', 'b', !!final[1], 'Thắng BK2']
+    ];
+    slots.forEach(slot=>renderKnockoutSlot(...slot));
+  }
+
+  editKnockoutBtn.addEventListener('click', ()=>{
+    knockoutEditMode = !knockoutEditMode;
+    editKnockoutBtn.textContent = knockoutEditMode ? 'Hủy' : '✎ Chỉnh sửa';
+    saveKnockoutWrap.style.display = knockoutEditMode ? 'block' : 'none';
+    renderKnockout();
+  });
+
+  saveKnockoutBtn.addEventListener('click', async ()=>{
+    const next = {};
+    let invalid = false;
+    document.querySelectorAll('.bracket-score-input').forEach(input=>{
+      const value = input.value.trim();
+      if(value === '') return;
+      const score = Number(value);
+      if(!Number.isInteger(score) || score < 0){ invalid = true; return; }
+      if(!next[input.dataset.match]) next[input.dataset.match] = {};
+      next[input.dataset.match][input.dataset.side] = score;
+    });
+    if(Object.values(next).some(score=>!Number.isFinite(score.a) || !Number.isFinite(score.b) || score.a === score.b)) invalid = true;
+    if(invalid){ showToast('Mỗi trận cần đủ hai điểm số nguyên khác nhau.'); return; }
+    const changed = id=> JSON.stringify(next[id] || {}) !== JSON.stringify(knockoutMatches[id] || {});
+    if(['qf1','qf2','qf3','qf4'].some(changed)){
+      delete next.sf1; delete next.sf2; delete next.final;
+    }else if(['sf1','sf2'].some(changed)){
+      delete next.final;
+    }
+    knockoutMatches = next;
+    saveKnockoutBtn.disabled = true;
+    saveKnockoutBtn.textContent = 'Đang lưu...';
+    try{
+      const result = await storage.set('knockout:matches', JSON.stringify(knockoutMatches));
+      if(!result) throw new Error('save-knockout-failed');
+      knockoutEditMode = false;
+      editKnockoutBtn.textContent = '✎ Chỉnh sửa';
+      saveKnockoutWrap.style.display = 'none';
+      renderKnockout();
+      showToast('Đã lưu kết quả vòng loại trực tiếp!');
+    }catch(error){
+      console.error(error);
+      showToast('Lưu kết quả thất bại, thử lại nhé.');
+    }finally{
+      saveKnockoutBtn.disabled = false;
+      saveKnockoutBtn.textContent = 'Lưu kết quả';
+    }
+  });
+
+  async function loadKnockout(){
+    try{
+      const result = await storage.get('knockout:matches');
+      if(result && result.value) knockoutMatches = JSON.parse(result.value) || {};
+    }catch(error){
+      knockoutMatches = {};
+    }
+    renderKnockout();
+  }
+
+  db.collection('settings').doc('knockout').onSnapshot((doc)=>{
+    if(doc.exists) knockoutMatches = doc.data().matches || {};
+    if(!knockoutEditMode) renderKnockout();
+  }, (error)=>{
+    console.error('Không thể đồng bộ vòng loại trực tiếp:', error);
+  });
+
+  loadKnockout();
+
+  function renderMatchEditor(){
+    matchEditor.style.display = groupsEditMode ? 'block' : 'none';
+    if(!groupsEditMode) return;
+    matchEditor.innerHTML = GROUPS.map(group=>{
+      const rows = groupMatchesFor(group).map(match=>{
+        const score = groupMatches[match.id] || {};
+        const scoreA = Number.isFinite(score.a) ? score.a : '';
+        const scoreB = Number.isFinite(score.b) ? score.b : '';
+        return '<div class="match-row"><span>' + escapeHtml(groupTeamName(group, match.a)) + '</span>' +
+          '<input class="score-input" data-match="' + match.id + '" data-side="a" type="number" min="0" value="' + scoreA + '">' +
+          '<strong>-</strong><input class="score-input" data-match="' + match.id + '" data-side="b" type="number" min="0" value="' + scoreB + '">' +
+          '<span>' + escapeHtml(groupTeamName(group, match.b)) + '</span></div>';
+      }).join('');
+      return '<h3 class="match-editor-title">Kết quả Bảng ' + group.key + '</h3>' + rows;
+    }).join('');
+  }
+
+  function renderGroups(){
+    let offset = 0;
+    GROUPS.forEach(group=>{
+      const row = document.getElementById(group.row);
+      row.innerHTML = '';
+      for(let i=0; i<group.count; i++){
+        const idx = offset + i;
+        const item = document.createElement('li');
+        if(groupsEditMode){
+          item.innerHTML = '<input class="group-team-input" data-idx="' + idx + '" type="text" ' +
+            'placeholder="' + escapeHtml(defaultGroupTeamName(group.key, i)) + '" value="' +
+            escapeHtml(groupTeams[idx] || '') + '">';
+        }else{
+          item.textContent = groupTeams[idx] || defaultGroupTeamName(group.key, i);
+        }
+        row.appendChild(item);
+      }
+      renderGroupRanking(group);
+      offset += group.count;
+    });
+    renderMatchEditor();
+    renderKnockout();
+  }
+
+  editGroupsBtn.addEventListener('click', ()=>{
+    groupsEditMode = !groupsEditMode;
+    editGroupsBtn.textContent = groupsEditMode ? 'Hủy' : '✎ Chỉnh sửa';
+    saveGroupsWrap.style.display = groupsEditMode ? 'block' : 'none';
+    renderGroups();
+  });
+
+  saveGroupsBtn.addEventListener('click', async ()=>{
+    document.querySelectorAll('.group-team-input').forEach(inp=>{
+      groupTeams[parseInt(inp.dataset.idx, 10)] = inp.value.trim();
+    });
+    const nextMatches = {};
+    let invalidScore = false;
+    document.querySelectorAll('.score-input').forEach(inp=>{
+      const value = inp.value.trim();
+      if(value === '') return;
+      const score = Number(value);
+      if(!Number.isInteger(score) || score < 0){ invalidScore = true; return; }
+      if(!nextMatches[inp.dataset.match]) nextMatches[inp.dataset.match] = {};
+      nextMatches[inp.dataset.match][inp.dataset.side] = score;
+    });
+    if(invalidScore){
+      showToast('Điểm số phải là số nguyên không âm.');
+      return;
+    }
+    Object.keys(nextMatches).forEach(key=>{
+      if(!Number.isFinite(nextMatches[key].a) || !Number.isFinite(nextMatches[key].b)) invalidScore = true;
+    });
+    if(invalidScore){
+      showToast('Hãy nhập đủ điểm cho cả hai đội của một trận.');
+      return;
+    }
+    if(Object.values(nextMatches).some(score=>score.a === score.b)){
+      showToast('Một trận không thể có tỷ số hòa.');
+      return;
+    }
+    groupMatches = nextMatches;
+
+    saveGroupsBtn.disabled = true;
+    saveGroupsBtn.textContent = 'Đang lưu...';
+    try{
+      const results = await Promise.all([
+        storage.set('groups:teams', JSON.stringify(groupTeams)),
+        storage.set('groups:matches', JSON.stringify(groupMatches))
+      ]);
+      if(results.some(result=>!result)) throw new Error('save-groups-failed');
+      groupsEditMode = false;
+      editGroupsBtn.textContent = '✎ Chỉnh sửa';
+      saveGroupsWrap.style.display = 'none';
+      renderGroups();
+      showToast('Đã lưu bảng đấu! 🏓');
+    }catch(err){
+      console.error(err);
+      showToast('Lưu bảng đấu thất bại, thử lại nhé.');
+    }finally{
+      saveGroupsBtn.disabled = false;
+      saveGroupsBtn.textContent = 'Lưu bảng đấu';
+    }
+  });
+
+  async function loadGroups(){
+    try{
+      const [teamsResult, matchesResult] = await Promise.all([
+        storage.get('groups:teams'),
+        storage.get('groups:matches')
+      ]);
+      if(teamsResult && teamsResult.value){
+        const stored = JSON.parse(teamsResult.value);
+        for(let i=0; i<GROUP_TEAM_SLOTS; i++) groupTeams[i] = stored[i] || '';
+      }
+      if(matchesResult && matchesResult.value) groupMatches = JSON.parse(matchesResult.value) || {};
+    }catch(e){
+      /* chưa có dữ liệu — dùng tên mặc định */
+    }
+    renderGroups();
+  }
+
+  db.collection('settings').doc('groups').onSnapshot((doc)=>{
+    if(doc.exists){
+      const data = doc.data();
+      const stored = data.teams || [];
+      for(let i=0; i<GROUP_TEAM_SLOTS; i++) groupTeams[i] = stored[i] || '';
+      groupMatches = data.matches || {};
+    }
+    if(!groupsEditMode) renderGroups();
+  }, (err)=>{
+    console.error('Không thể đồng bộ bảng đấu:', err);
+  });
+
+  loadGroups();
+
   /* ---------- ADMIN ---------- */
   let isAdmin = false;
   let adminHashExists = false;
@@ -1241,12 +1746,22 @@
   function updateAdminUI(){
     document.getElementById('openModalBtn').style.display = isAdmin ? 'inline-block' : 'none';
     document.getElementById('editLeaderboardBtn').style.display = isAdmin ? 'inline-block' : 'none';
+    document.getElementById('editGroupsBtn').style.display = isAdmin ? 'inline-block' : 'none';
+    document.getElementById('editKnockoutBtn').style.display = isAdmin ? 'inline-block' : 'none';
     if(!isAdmin){
       // đảm bảo thoát chế độ chỉnh sửa bảng xếp hạng nếu đang mở
       lbEditMode = false;
       saveLeaderboardWrap.style.display = 'none';
       editLeaderboardBtn.textContent = '✎ Chỉnh sửa';
       renderLeaderboard();
+      groupsEditMode = false;
+      saveGroupsWrap.style.display = 'none';
+      editGroupsBtn.textContent = '✎ Chỉnh sửa';
+      renderGroups();
+      knockoutEditMode = false;
+      saveKnockoutWrap.style.display = 'none';
+      editKnockoutBtn.textContent = '✎ Chỉnh sửa';
+      renderKnockout();
     }
     renderGrid();
     adminBtn.textContent = isAdmin ? '🔓 Đang là Admin — Đăng xuất' : '🔒 Quản trị viên';
