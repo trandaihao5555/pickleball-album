@@ -6,6 +6,8 @@
 <title>Album Pickleball — Toán 1 · 23-26</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Manrope:wght@400;500;600;700;800&family=Caveat:wght@500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
   :root{
@@ -134,6 +136,15 @@
     padding-top:16px;
   }
   .stat-strip b{ color:var(--pickle-yellow); font-size:16px; }
+
+  // Synchronize album changes made from any other browser in real time.
+  db.collection('photos').orderBy('ts', 'desc').onSnapshot((snapshot)=>{
+    photos = snapshot.docs.map(doc => doc.data());
+    renderFilters();
+    renderGrid();
+  }, (err)=>{
+    console.error('Không thể đồng bộ album:', err);
+  });
 
   /* ---------- LEADERBOARD ---------- */
   .leaderboard-section{
@@ -720,6 +731,66 @@
 
 <script>
 (function(){
+  /* Shared Firebase data: small, compressed images are stored directly in Firestore. */
+  const firebaseConfig = {
+    apiKey: "AIzaSyBBkyQoyWUsejSY5obu6GGih2wU3WLCfS4",
+    authDomain: "pickleball-t1tans.firebaseapp.com",
+    projectId: "pickleball-t1tans",
+    storageBucket: "pickleball-t1tans.firebasestorage.app",
+    messagingSenderId: "574199518513",
+    appId: "1:574199518513:web:271a8cd9990717ac324c10",
+    measurementId: "G-HMV0NETWRT"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+
+  /* The existing UI uses this small async storage interface. Its data is shared
+     through Firebase rather than isolated in the current browser. */
+  const storage = {
+    async get(key){
+      if(key === 'gallery:index'){
+        const snapshot = await db.collection('photos').orderBy('ts', 'desc').get();
+        return { value: JSON.stringify(snapshot.docs.map(doc => doc.id)) };
+      }
+      if(key.startsWith('gallery:photo:')){
+        const doc = await db.collection('photos').doc(key.slice('gallery:photo:'.length)).get();
+        return doc.exists ? { value: JSON.stringify(doc.data()) } : null;
+      }
+      if(key === 'leaderboard:teams'){
+        const doc = await db.collection('settings').doc('leaderboard').get();
+        return doc.exists ? { value: JSON.stringify(doc.data().teams || []) } : null;
+      }
+      if(key === 'admin:password'){
+        const doc = await db.collection('settings').doc('admin').get();
+        return doc.exists ? { value: doc.data().password } : null;
+      }
+      return null;
+    },
+    async set(key, value){
+      try {
+        if(key.startsWith('gallery:photo:')){
+          const photo = JSON.parse(value);
+          // Firestore documents are limited to 1 MiB. Keep a margin for metadata.
+          if(photo.dataUrl.length > 700000) throw new Error('image-too-large');
+          await db.collection('photos').doc(photo.id).set(photo);
+        }else if(key === 'gallery:index'){
+          /* Photos are queried directly from Firestore, so no separate index is needed. */
+        }else if(key === 'leaderboard:teams'){
+          await db.collection('settings').doc('leaderboard').set({ teams: JSON.parse(value) });
+        }else if(key === 'admin:password'){
+          await db.collection('settings').doc('admin').set({ password: value });
+        }else{
+          throw new Error('Unknown storage key: ' + key);
+        }
+        return true;
+      } catch (error) {
+        console.error('Không thể lưu dữ liệu Firebase:', error);
+        return false;
+      }
+    }
+  };
+
   const grid = document.getElementById('grid');
   const filtersEl = document.getElementById('filters');
   const statCount = document.getElementById('statCount');
@@ -775,7 +846,7 @@
 
     for(const file of files){
       try{
-        const dataUrl = await compressImage(file, 1000, 0.78);
+        const dataUrl = await compressImage(file, 800, 0.65);
         pendingFiles.push(dataUrl);
         const img = document.createElement('img');
         img.src = dataUrl;
@@ -846,7 +917,7 @@
           dataUrl: pendingFiles[i],
           ts: Date.now() + i
         };
-        const setResult = await window.storage.set('gallery:photo:' + id, JSON.stringify(photo), true);
+        const setResult = await storage.set('gallery:photo:' + id, JSON.stringify(photo));
         if(!setResult) throw new Error('save-photo-failed');
         newPhotos.push(photo);
         saveBtn.textContent = 'Đang lưu... (' + (i+1) + '/' + total + ')';
@@ -854,13 +925,13 @@
 
       let index = [];
       try{
-        const idxResult = await window.storage.get('gallery:index', true);
+        const idxResult = await storage.get('gallery:index');
         if(idxResult && idxResult.value) index = JSON.parse(idxResult.value);
       }catch(e){ index = []; }
 
       const newIds = newPhotos.map(p=>p.id);
       index = newIds.concat(index);
-      const idxSetResult = await window.storage.set('gallery:index', JSON.stringify(index), true);
+      const idxSetResult = await storage.set('gallery:index', JSON.stringify(index));
       if(!idxSetResult) throw new Error('save-index-failed');
 
       photos = newPhotos.concat(photos);
@@ -943,14 +1014,14 @@
     try{
       let index = [];
       try{
-        const idxResult = await window.storage.get('gallery:index', true);
+        const idxResult = await storage.get('gallery:index');
         if(idxResult && idxResult.value) index = JSON.parse(idxResult.value);
       }catch(e){ index = []; }
 
       const loaded = [];
       for(const id of index){
         try{
-          const r = await window.storage.get('gallery:photo:' + id, true);
+          const r = await storage.get('gallery:photo:' + id);
           if(r && r.value) loaded.push(JSON.parse(r.value));
         }catch(e){ /* skip missing/broken entries */ }
       }
@@ -1021,7 +1092,7 @@
     saveLeaderboardBtn.disabled = true;
     saveLeaderboardBtn.textContent = 'Đang lưu...';
     try{
-      const setResult = await window.storage.set('leaderboard:teams', JSON.stringify(teams), true);
+      const setResult = await storage.set('leaderboard:teams', JSON.stringify(teams));
       if(!setResult) throw new Error('save-leaderboard-failed');
       lbEditMode = false;
       editLeaderboardBtn.textContent = '✎ Chỉnh sửa';
@@ -1039,7 +1110,7 @@
 
   async function loadLeaderboard(){
     try{
-      const r = await window.storage.get('leaderboard:teams', true);
+      const r = await storage.get('leaderboard:teams');
       if(r && r.value){
         const stored = JSON.parse(r.value);
         for(let i=0;i<TEAM_SLOTS;i++){
@@ -1051,6 +1122,16 @@
     }
     renderLeaderboard();
   }
+
+  db.collection('settings').doc('leaderboard').onSnapshot((doc)=>{
+    if(doc.exists){
+      const stored = doc.data().teams || [];
+      for(let i=0;i<TEAM_SLOTS;i++) teams[i] = stored[i] || '';
+    }
+    if(!lbEditMode) renderLeaderboard();
+  }, (err)=>{
+    console.error('Không thể đồng bộ bảng xếp hạng:', err);
+  });
 
   loadLeaderboard();
 
@@ -1129,7 +1210,7 @@
     btn.textContent = 'Đang lưu...';
     try{
       const hash = await sha256Hex(p1);
-      const result = await window.storage.set('admin:password', hash, true);
+      const result = await storage.set('admin:password', hash);
       if(!result) throw new Error('save-admin-failed');
       adminHash = hash;
       adminHashExists = true;
@@ -1162,7 +1243,7 @@
 
   async function loadAdminState(){
     try{
-      const r = await window.storage.get('admin:password', true);
+      const r = await storage.get('admin:password');
       if(r && r.value){
         adminHash = r.value;
         adminHashExists = true;
