@@ -148,9 +148,12 @@
 
   /* ---------- LEADERBOARD ---------- */
   .leaderboard-section{
-    max-width:960px;
-    margin:0 auto;
-    padding:52px 24px 6px;
+    width:100%;
+    max-width:none;
+    margin:0;
+    /* Căn mép tiêu đề trùng với Album kỷ niệm ở mọi độ rộng màn hình. */
+    padding:52px max(24px, calc((100vw - 1132px) / 2)) 6px;
+    overflow-x:clip;
   }
 
   .btn-edit{
@@ -163,7 +166,11 @@
   }
   .btn-edit:hover{ border-color:var(--pickle-yellow); color:var(--chalk); }
 
-  .medal-tier{ margin-bottom:30px; }
+  .medal-tier{
+    width:100%;
+    max-width:960px;
+    margin:0 auto 30px;
+  }
   .medal-tier-label{
     font-family:'Space Mono', monospace;
     font-size:12px;
@@ -173,12 +180,34 @@
     margin-bottom:14px;
   }
 
-  .medal-row{ display:grid; gap:16px; }
-  .medal-row.gold{ grid-template-columns:1fr; max-width:380px; margin:0 auto; }
-  .medal-row.silver{ grid-template-columns:repeat(auto-fit, minmax(160px,1fr)); }
-  .medal-row.bronze{ grid-template-columns:repeat(auto-fit, minmax(120px,1fr)); }
+  .medal-row{
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+    gap:16px;
+    width:100%;
+  }
+  .medal-row.gold{ max-width:380px; margin:0 auto; }
+  .medal-row.gold .medal-card{ flex:1 1 100%; }
+  .medal-row.silver .medal-card{
+    flex:1 1 160px;
+    max-width:calc((100% - 32px) / 3);
+  }
+  /* .medal-row.bronze .medal-card{
+    flex:1 1 120px;
+    max-width:calc((100% - 48px) / 4);
+  } */
+  .medal-row.bronze .medal-card {
+  /* Bỏ flex 120px đi, ép chính xác chiều rộng mỗi thẻ là 25% trừ đi khoảng cách */
+  flex: 0 0 calc((100% - 48px) / 4); 
+  max-width: calc((100% - 48px) / 4);
+  
+  /* Lệnh này cực kỳ quan trọng: Ngăn padding và viền làm phình to thẻ */
+  box-sizing: border-box; 
+}
 
   .medal-card{
+    min-width:0;
     background:var(--court-teal);
     border:1px solid rgba(247,244,236,0.1);
     border-radius:14px;
@@ -241,6 +270,7 @@
     gap:16px;
     margin-bottom:26px;
   }
+  .leaderboard-section .section-head{ justify-content:center; }
 
   h2.section-title{
     font-family:'Anton', sans-serif;
@@ -294,6 +324,7 @@
   }
 
   .polaroid{
+    position:relative;
     background:var(--chalk);
     padding:12px 12px 0;
     border-radius:3px;
@@ -353,6 +384,24 @@
     background:var(--court-teal-deep);
     color:var(--pickle-yellow);
   }
+  .photo-delete-btn{
+    position:absolute;
+    top:18px;
+    right:18px;
+    z-index:3;
+    width:32px;
+    height:32px;
+    border:0;
+    border-radius:50%;
+    background:var(--coral-net);
+    color:#fff;
+    font-size:19px;
+    font-weight:700;
+    line-height:1;
+    cursor:pointer;
+    box-shadow:0 2px 8px rgba(0,0,0,0.28);
+  }
+  .photo-delete-btn:hover{ filter:brightness(1.1); }
 
   /* ---------- EMPTY / LOADING ---------- */
   .empty-state, .loading-state{
@@ -562,6 +611,13 @@
   @media (max-width:520px){
     .board{ padding:24px 16px; }
     .grid{ gap:26px 18px; grid-template-columns:repeat(auto-fill, minmax(150px, 1fr)); }
+    .leaderboard-section{ padding:40px 24px 6px; }
+    .medal-row{ gap:12px; }
+    .medal-row.silver .medal-card,
+    .medal-row.bronze .medal-card{
+      flex-basis:120px;
+      max-width:calc((100% - 12px) / 2);
+    }
   }
 
   @media (prefers-reduced-motion: reduce){
@@ -581,7 +637,7 @@
   </svg>
 
   <div class="hero-inner">
-    <div class="eyebrow">Lớp Toán 1 · Niên khóa 23–26</div>
+    <div class="eyebrow">Toán 1 · Niên khóa 23–26</div>
     <h1 class="title">Giải Đấu<br>Pickle<span>Ball</span> Nội Bộ</h1>
     <p class="subtitle">Nơi cả lớp cùng lưu giữ khoảnh khắc trên sân — từ cú giao bóng đầu tiên, pha cứu bóng nghẹt thở, đến nụ cười sau mỗi trận đấu.</p>
     <div class="hero-actions">
@@ -594,6 +650,8 @@
     </div>
   </div>
 </header>
+
+<br>
 
 <section class="leaderboard-section">
   <div class="section-head">
@@ -786,6 +844,16 @@
         return true;
       } catch (error) {
         console.error('Không thể lưu dữ liệu Firebase:', error);
+        return false;
+      }
+    },
+    async remove(key){
+      try{
+        if(!key.startsWith('gallery:photo:')) throw new Error('Unknown storage key: ' + key);
+        await db.collection('photos').doc(key.slice('gallery:photo:'.length)).delete();
+        return true;
+      }catch(error){
+        console.error('Không thể xóa dữ liệu Firebase:', error);
         return false;
       }
     }
@@ -993,15 +1061,32 @@
       const card = document.createElement('div');
       card.className = 'polaroid';
       const tagHtml = p.tag ? '<span class="tag-pill">' + escapeHtml(p.tag) + '</span>' : '';
+      const deleteHtml = isAdmin ? '<button class="photo-delete-btn" type="button" aria-label="Xóa ảnh" title="Xóa ảnh">×</button>' : '';
       card.innerHTML =
+        deleteHtml +
         '<img src="' + p.dataUrl + '" alt="' + escapeHtml(p.caption) + '">' +
         '<div class="polaroid-caption">' +
           '<div class="cap-text">' + escapeHtml(p.caption) + '</div>' +
           '<div class="cap-meta"><span>' + escapeHtml(p.uploader) + '</span><span>' + formatDate(p.ts) + '</span></div>' +
           tagHtml +
         '</div>';
+      const deleteBtn = card.querySelector('.photo-delete-btn');
+      if(deleteBtn) deleteBtn.addEventListener('click', ()=> deletePhoto(p));
       grid.appendChild(card);
     });
+  }
+
+  async function deletePhoto(photo){
+    if(!isAdmin || !window.confirm('Xóa ảnh này khỏi album?')) return;
+    const removed = await storage.remove('gallery:photo:' + photo.id);
+    if(!removed){
+      showToast('Không thể xóa ảnh, thử lại nhé.');
+      return;
+    }
+    photos = photos.filter(p=>p.id !== photo.id);
+    renderFilters();
+    renderGrid();
+    showToast('Đã xóa ảnh khỏi album.');
   }
 
   function escapeHtml(str){
@@ -1163,6 +1248,7 @@
       editLeaderboardBtn.textContent = '✎ Chỉnh sửa';
       renderLeaderboard();
     }
+    renderGrid();
     adminBtn.textContent = isAdmin ? '🔓 Đang là Admin — Đăng xuất' : '🔒 Quản trị viên';
   }
 
