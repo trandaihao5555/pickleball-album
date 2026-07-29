@@ -24,11 +24,35 @@
   *{ box-sizing:border-box; margin:0; padding:0; }
 
   body{
-    background:var(--court-teal-deep);
+    position:relative;
+    isolation:isolate;
+    background:
+      radial-gradient(circle at 12% 18%, rgba(231,210,46,0.11), transparent 28%),
+      radial-gradient(circle at 88% 62%, rgba(232,98,61,0.10), transparent 30%),
+      var(--court-teal-deep);
     color:var(--chalk);
     font-family:'Manrope', sans-serif;
     -webkit-font-smoothing:antialiased;
     min-height:100vh;
+  }
+
+  body::before{
+    content:'';
+    position:fixed;
+    z-index:-1;
+    inset:0;
+    pointer-events:none;
+    opacity:0.26;
+    background-image:
+      linear-gradient(rgba(247,244,236,0.08) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(247,244,236,0.08) 1px, transparent 1px);
+    background-size:48px 48px;
+    mask-image:linear-gradient(to bottom, transparent, black 14%, black 86%, transparent);
+    animation:courtGridDrift 18s linear infinite;
+  }
+
+  @keyframes courtGridDrift{
+    to{ background-position:48px 48px; }
   }
 
   ::selection{ background:var(--pickle-yellow); color:var(--ink); }
@@ -213,11 +237,65 @@
     border-radius:14px;
     padding:16px 14px;
     text-align:center;
+    transition:transform .22s ease, box-shadow .22s ease, border-color .22s ease;
   }
+  .medal-card:hover{ transform:translateY(-5px); box-shadow:0 14px 28px rgba(0,0,0,0.22); }
+  .medal-card.gold:hover{ box-shadow:0 0 0 1px rgba(231,210,46,0.24), 0 16px 34px rgba(231,210,46,0.18); }
   .medal-card.gold{
+    position:relative;
+    isolation:isolate;
+    overflow:hidden;
     background:linear-gradient(160deg, #2c6e62, var(--court-teal));
     border:1.5px solid var(--pickle-yellow);
     padding:26px 20px;
+    box-shadow:0 0 18px rgba(231,210,46,0.18);
+  }
+  .medal-card.gold > *{ position:relative; z-index:1; }
+  .medal-card.gold::before,
+  .medal-card.gold::after{
+    content:'';
+    position:absolute;
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    background:var(--pickle-yellow);
+    box-shadow:
+      0 -32px 0 -2px #fff4a7, 23px -23px 0 -2px #ffcf3f, 32px 0 0 -2px #fff4a7,
+      23px 23px 0 -2px #ff9d2e, 0 32px 0 -2px #fff4a7, -23px 23px 0 -2px #ffcf3f,
+      -32px 0 0 -2px #fff4a7, -23px -23px 0 -2px #ff9d2e,
+      12px -39px 0 -3px #ffe75e, 39px -12px 0 -3px #fff4a7,
+      39px 12px 0 -3px #ffe75e, 12px 39px 0 -3px #fff4a7,
+      -12px 39px 0 -3px #ffe75e, -39px 12px 0 -3px #fff4a7,
+      -39px -12px 0 -3px #ffe75e, -12px -39px 0 -3px #fff4a7;
+    filter:drop-shadow(0 0 5px rgba(255,210,46,0.9));
+    opacity:0;
+    animation:fireworkBurst 1.7s ease-out infinite;
+  }
+  .medal-card.gold::before{ top:30%; left:20%; }
+  .medal-card.gold::after{ top:42%; right:18%; animation-delay:0.82s; }
+  @keyframes fireworkBurst{
+    0%, 16%, 100%{ transform:scale(0.15); opacity:0; }
+    24%{ opacity:1; }
+    46%{ transform:scale(1); opacity:0; }
+  }
+  /* Pháo hoa thực tế được tạo ngẫu nhiên bằng JavaScript. */
+  .medal-card.gold::before,
+  .medal-card.gold::after{ display:none; }
+  .medal-card.gold > .gold-fireworks-layer{ position:absolute; z-index:4; inset:0; overflow:hidden; pointer-events:none; }
+  .gold-firework-particle{
+    position:absolute;
+    width:10px;
+    height:10px;
+    border-radius:50%;
+    background:var(--spark-color, #fff4a7);
+    box-shadow:0 0 9px var(--spark-color, #fff4a7), 0 0 20px rgba(255,157,36,0.9);
+    animation:randomFirework 1.55s cubic-bezier(.15,.68,.22,1) forwards;
+  }
+  @keyframes randomFirework{
+    0%{ transform:translate(-50%, -50%) scale(.25); opacity:1; }
+    72%{ opacity:1; }
+    100%{ transform:translate(calc(-50% + var(--burst-x)), calc(-50% + var(--burst-y))) scale(.15); opacity:0; }
+  }
   }
   .medal-emoji{ font-size:26px; display:block; margin-bottom:8px; }
   .medal-card.gold .medal-emoji{ font-size:40px; }
@@ -273,7 +351,11 @@
     border:1px solid rgba(247,244,236,0.16);
     border-radius:14px;
     overflow:hidden;
+    transition:transform .22s ease, border-color .22s ease, box-shadow .22s ease;
   }
+  .group-card:hover{ transform:translateY(-4px); border-color:rgba(231,210,46,0.48); box-shadow:0 15px 30px rgba(0,0,0,0.20); }
+  .group-card[role="button"], .bracket-match[role="button"]{ cursor:pointer; }
+  .group-card[role="button"]:focus-visible, .bracket-match[role="button"]:focus-visible{ outline:3px solid var(--pickle-yellow); outline-offset:3px; }
   .group-card h3{
     padding:14px 18px;
     background:var(--court-teal-light);
@@ -339,7 +421,8 @@
   .bracket-stage.semifinals > .bracket-match:nth-child(2){ top:108px; }
   .bracket-stage.semifinals > .bracket-match:nth-child(3){ top:308px; }
   .bracket-stage.finals > .bracket-match:nth-child(2){ top:208px; }
-  .bracket-match{ display:grid; grid-template-columns:64px minmax(0, 1fr); width:100%; max-width:210px; background:rgba(20,97,90,0.72); border:1px solid rgba(247,244,236,0.16); border-radius:12px; overflow:hidden; }
+  .bracket-match{ display:grid; grid-template-columns:64px minmax(0, 1fr); width:100%; max-width:210px; background:rgba(20,97,90,0.72); border:1px solid rgba(247,244,236,0.16); border-radius:12px; overflow:hidden; transition:transform .2s ease, border-color .2s ease, box-shadow .2s ease; }
+  .bracket-match:hover{ transform:translateY(-3px) scale(1.015); border-color:rgba(231,210,46,0.72); box-shadow:0 12px 24px rgba(0,0,0,0.24), 0 0 18px rgba(231,210,46,0.10); }
   .bracket-match.has-next{ position:relative; }
   .bracket-match.has-next::after{ content:''; position:absolute; z-index:0; top:50%; right:-70px; width:70px; border-top:2px solid rgba(231,210,46,0.65); }
   .bracket-match.has-next::before{ content:attr(data-next); position:absolute; z-index:1; top:calc(50% - 19px); right:-65px; width:60px; color:var(--pickle-yellow); font:9px 'Space Mono', monospace; text-align:center; white-space:nowrap; }
@@ -348,6 +431,40 @@
   .bracket-team + .bracket-team{ border-top:1px solid rgba(247,244,236,0.1); }
   .bracket-team.placeholder{ color:var(--chalk-dim); font-weight:500; font-style:italic; }
   .bracket-match.final{ border-color:var(--pickle-yellow); }
+  .bracket-stage.finals > .bracket-match.final{
+    position:absolute;
+    isolation:isolate;
+    overflow:hidden;
+    border-color:#ffb22e;
+    box-shadow:0 0 10px rgba(255,91,36,0.52), 0 0 26px rgba(255,176,30,0.34);
+    animation:finalFlameGlow 1.8s ease-in-out infinite;
+  }
+  .bracket-match.final > *{ position:relative; z-index:1; }
+  .bracket-match.final::before{
+    content:'';
+    position:absolute;
+    z-index:0;
+    inset:-22px -8px;
+    background:
+      radial-gradient(ellipse at 12% 118%, rgba(255,71,25,0.94) 0 12%, transparent 13%),
+      radial-gradient(ellipse at 34% 116%, rgba(255,174,25,0.86) 0 18%, transparent 19%),
+      radial-gradient(ellipse at 58% 118%, rgba(255,74,20,0.88) 0 14%, transparent 15%),
+      radial-gradient(ellipse at 80% 116%, rgba(255,203,37,0.82) 0 17%, transparent 18%),
+      linear-gradient(120deg, rgba(151,37,20,0.32), rgba(255,116,24,0.10), rgba(130,26,16,0.34));
+    background-size:80px 100px, 95px 125px, 80px 105px, 100px 130px, 100% 100%;
+    background-repeat:repeat-x;
+    background-position:0 18px, 20px 8px, 42px 20px, 58px 3px, center;
+    mix-blend-mode:screen;
+    animation:flameLick 1.25s ease-in-out infinite alternate;
+  }
+  @keyframes finalFlameGlow{
+    0%, 100%{ box-shadow:0 0 9px rgba(255,76,24,0.48), 0 0 22px rgba(255,177,31,0.28); }
+    50%{ box-shadow:0 0 17px rgba(255,62,18,0.78), 0 0 38px rgba(255,192,36,0.55); }
+  }
+  @keyframes flameLick{
+    from{ transform:translateX(-10px) translateY(7px) scaleY(0.9); opacity:0.68; }
+    to{ transform:translateX(9px) translateY(-5px) scaleY(1.14); opacity:1; }
+  }
   .bracket-match.final .bracket-match-id{ background:rgba(231,210,46,0.13); }
   .bracket-score{ color:var(--pickle-yellow); font-family:'Space Mono', monospace; font-size:14px; }
   .bracket-score-input{ width:38px; padding:4px 2px; background:rgba(247,244,236,0.08); border:1px dashed rgba(247,244,236,0.4); border-radius:5px; color:var(--chalk); font:700 13px 'Space Mono', monospace; text-align:center; }
@@ -682,6 +799,11 @@
     color:#5a5a53;
     margin-bottom:16px;
   }
+  .results-list{ display:grid; gap:9px; margin-top:16px; }
+  .result-row{ display:grid; grid-template-columns:minmax(0, 1fr) auto minmax(0, 1fr); align-items:center; gap:10px; padding:11px 12px; border-radius:9px; background:#edf2ed; font-size:13px; font-weight:700; }
+  .result-row .result-team:last-child{ text-align:right; }
+  .result-score{ min-width:54px; padding:5px 7px; border-radius:6px; background:var(--court-teal-deep); color:var(--pickle-yellow); font:700 13px 'Space Mono', monospace; text-align:center; }
+  .result-pending{ color:#6b6b64; font-size:12px; font-weight:500; font-style:italic; text-align:center; }
 
   .btn-outline{
     background:transparent;
@@ -731,7 +853,8 @@
   }
 
   @media (prefers-reduced-motion: reduce){
-    *{ transition:none !important; }
+    *, *::before, *::after{ animation:none !important; transition:none !important; }
+    .medal-card.gold .gold-firework-particle{ animation:randomFirework 1.55s cubic-bezier(.15,.68,.22,1) forwards !important; }
   }
 </style>
 </head>
@@ -794,17 +917,17 @@
   </div>
 
   <div class="group-grid">
-    <article class="group-card">
+    <article class="group-card" role="button" tabindex="0" data-group="A" aria-label="Xem kết quả Bảng A">
       <h3>Bảng A</h3>
       <ul class="group-team-list" id="groupARow"></ul>
       <table class="group-ranking" id="groupARanking"></table>
     </article>
-    <article class="group-card">
+    <article class="group-card" role="button" tabindex="0" data-group="B" aria-label="Xem kết quả Bảng B">
       <h3>Bảng B</h3>
       <ul class="group-team-list" id="groupBRow"></ul>
       <table class="group-ranking" id="groupBRanking"></table>
     </article>
-    <article class="group-card">
+    <article class="group-card" role="button" tabindex="0" data-group="C" aria-label="Xem kết quả Bảng C">
       <h3>Bảng C</h3>
       <ul class="group-team-list" id="groupCRow"></ul>
       <table class="group-ranking" id="groupCRanking"></table>
@@ -824,19 +947,19 @@
   <div class="bracket">
     <div class="bracket-stage">
       <div class="bracket-stage-title">Tứ kết</div>
-      <div class="bracket-match has-next" data-next="Thắng TK1"><span class="bracket-match-id">TK1</span><div class="bracket-team" id="qf1a"></div><div class="bracket-team" id="qf1b"></div></div>
-      <div class="bracket-match has-next" data-next="Thắng TK2"><span class="bracket-match-id">TK2</span><div class="bracket-team" id="qf2a"></div><div class="bracket-team" id="qf2b"></div></div>
-      <div class="bracket-match has-next" data-next="Thắng TK3"><span class="bracket-match-id">TK3</span><div class="bracket-team" id="qf3a"></div><div class="bracket-team" id="qf3b"></div></div>
-      <div class="bracket-match has-next" data-next="Thắng TK4"><span class="bracket-match-id">TK4</span><div class="bracket-team" id="qf4a"></div><div class="bracket-team" id="qf4b"></div></div>
+      <div class="bracket-match has-next" role="button" tabindex="0" data-match-id="qf1" data-next="Thắng TK1"><span class="bracket-match-id">TK1</span><div class="bracket-team" id="qf1a"></div><div class="bracket-team" id="qf1b"></div></div>
+      <div class="bracket-match has-next" role="button" tabindex="0" data-match-id="qf2" data-next="Thắng TK2"><span class="bracket-match-id">TK2</span><div class="bracket-team" id="qf2a"></div><div class="bracket-team" id="qf2b"></div></div>
+      <div class="bracket-match has-next" role="button" tabindex="0" data-match-id="qf3" data-next="Thắng TK3"><span class="bracket-match-id">TK3</span><div class="bracket-team" id="qf3a"></div><div class="bracket-team" id="qf3b"></div></div>
+      <div class="bracket-match has-next" role="button" tabindex="0" data-match-id="qf4" data-next="Thắng TK4"><span class="bracket-match-id">TK4</span><div class="bracket-team" id="qf4a"></div><div class="bracket-team" id="qf4b"></div></div>
     </div>
     <div class="bracket-stage semifinals">
       <div class="bracket-stage-title">Bán kết</div>
-      <div class="bracket-match has-next" data-next="Thắng BK1"><span class="bracket-match-id">BK1</span><div class="bracket-team" id="sf1a"></div><div class="bracket-team" id="sf1b"></div></div>
-      <div class="bracket-match has-next" data-next="Thắng BK2"><span class="bracket-match-id">BK2</span><div class="bracket-team" id="sf2a"></div><div class="bracket-team" id="sf2b"></div></div>
+      <div class="bracket-match has-next" role="button" tabindex="0" data-match-id="sf1" data-next="Thắng BK1"><span class="bracket-match-id">BK1</span><div class="bracket-team" id="sf1a"></div><div class="bracket-team" id="sf1b"></div></div>
+      <div class="bracket-match has-next" role="button" tabindex="0" data-match-id="sf2" data-next="Thắng BK2"><span class="bracket-match-id">BK2</span><div class="bracket-team" id="sf2a"></div><div class="bracket-team" id="sf2b"></div></div>
     </div>
     <div class="bracket-stage finals">
       <div class="bracket-stage-title">Chung kết</div>
-      <div class="bracket-match final"><span class="bracket-match-id">Chung kết</span><div class="bracket-team" id="finala"></div><div class="bracket-team" id="finalb"></div></div>
+      <div class="bracket-match final" role="button" tabindex="0" data-match-id="final"><span class="bracket-match-id">Chung kết</span><div class="bracket-team" id="finala"></div><div class="bracket-team" id="finalb"></div></div>
     </div>
   </div>
   <div class="knockout-actions" id="saveKnockoutWrap" style="display:none;"><button class="btn btn-primary" id="saveKnockoutBtn">Lưu kết quả</button></div>
@@ -896,6 +1019,16 @@
       <button class="btn btn-secondary" id="cancelBtn">Hủy</button>
       <button class="btn btn-primary" id="saveBtn">Lưu ảnh</button>
     </div>
+  </div>
+</div>
+
+<!-- ADMIN MODAL -->
+<div class="modal-overlay" id="resultsOverlay" aria-hidden="true">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="resultsTitle">
+    <h3 id="resultsTitle">Kết quả trận đấu</h3>
+    <p class="modal-hint" id="resultsSubtitle"></p>
+    <div class="results-list" id="resultsList"></div>
+    <div class="modal-actions"><button class="btn btn-secondary" id="resultsCloseBtn">Đóng</button></div>
   </div>
 </div>
 
@@ -1313,12 +1446,55 @@
 
   let teams = new Array(TEAM_SLOTS).fill('');
   let lbEditMode = false;
+  let goldFireworksTimer = null;
 
   const editLeaderboardBtn = document.getElementById('editLeaderboardBtn');
   const saveLeaderboardWrap = document.getElementById('saveLeaderboardWrap');
   const saveLeaderboardBtn = document.getElementById('saveLeaderboardBtn');
 
   function defaultTeamName(idx){ return 'Đội #' + (idx + 1); }
+
+  function startGoldFireworks(card){
+    if(goldFireworksTimer) clearInterval(goldFireworksTimer);
+    if(!card) return;
+    const layer = document.createElement('div');
+    layer.className = 'gold-fireworks-layer';
+    card.appendChild(layer);
+    const colors = ['#fff9bf', '#ffe25a', '#ffbd35', '#ff8b2a'];
+    const launch = ()=>{
+      const bursts = 1 + Math.floor(Math.random() * 3);
+      const origins = [];
+      for(let burstIndex = 0; burstIndex < bursts; burstIndex++){
+        let originX, originY, attempts = 0;
+        do{
+          originX = 16 + Math.random() * 68;
+          originY = 18 + Math.random() * 62;
+          attempts++;
+        }while(
+          attempts < 14 &&
+          origins.some(origin=> Math.hypot(origin.x - originX, origin.y - originY) < 36)
+        );
+        origins.push({ x:originX, y:originY });
+        const particles = 10 + Math.floor(Math.random() * 8);
+        for(let index = 0; index < particles; index++){
+          const angle = (Math.PI * 2 * index / particles) + (Math.random() - .5) * .3;
+          const distance = 26 + Math.random() * 42;
+          const particle = document.createElement('i');
+          particle.className = 'gold-firework-particle';
+          particle.style.left = originX + '%';
+          particle.style.top = originY + '%';
+          particle.style.setProperty('--burst-x', (Math.cos(angle) * distance) + 'px');
+          particle.style.setProperty('--burst-y', (Math.sin(angle) * distance) + 'px');
+          particle.style.setProperty('--spark-color', colors[Math.floor(Math.random() * colors.length)]);
+          particle.style.animationDelay = (Math.random() * .13) + 's';
+          layer.appendChild(particle);
+          setTimeout(()=>particle.remove(), 1150);
+        }
+      }
+    };
+    launch();
+    goldFireworksTimer = setInterval(launch, 1450);
+  }
 
   function matchLoser(matchId, matchTeams){
     const score = knockoutMatches[matchId];
@@ -1366,6 +1542,7 @@
         row.appendChild(card);
       }
     });
+    startGoldFireworks(document.querySelector('.medal-card.gold'));
   }
 
   editLeaderboardBtn.addEventListener('click', ()=>{
@@ -1563,6 +1740,76 @@
     ];
     slots.forEach(slot=>renderKnockoutSlot(...slot));
   }
+
+  const resultsOverlay = document.getElementById('resultsOverlay');
+  const resultsTitle = document.getElementById('resultsTitle');
+  const resultsSubtitle = document.getElementById('resultsSubtitle');
+  const resultsList = document.getElementById('resultsList');
+
+  function resultRow(teamA, teamB, score){
+    const hasScore = score && Number.isFinite(score.a) && Number.isFinite(score.b);
+    return '<div class="result-row"><span class="result-team">' + escapeHtml(teamA) + '</span>' +
+      (hasScore ? '<strong class="result-score">' + score.a + ' - ' + score.b + '</strong>' : '<span class="result-pending">Chưa có tỷ số</span>') +
+      '<span class="result-team">' + escapeHtml(teamB) + '</span></div>';
+  }
+
+  function openResults(title, subtitle, rows){
+    resultsTitle.textContent = title;
+    resultsSubtitle.textContent = subtitle;
+    resultsList.innerHTML = rows;
+    resultsOverlay.classList.add('open');
+    resultsOverlay.setAttribute('aria-hidden', 'false');
+    document.getElementById('resultsCloseBtn').focus();
+  }
+
+  function closeResults(){
+    resultsOverlay.classList.remove('open');
+    resultsOverlay.setAttribute('aria-hidden', 'true');
+  }
+
+  function showGroupResults(groupKey){
+    const group = GROUPS.find(item=>item.key === groupKey);
+    const rows = groupMatchesFor(group).map(match=> resultRow(
+      groupTeamName(group, match.a), groupTeamName(group, match.b), groupMatches[match.id]
+    )).join('');
+    openResults('Kết quả Bảng ' + groupKey, 'Tất cả các trận vòng bảng.', rows);
+  }
+
+  function knockoutTeams(){
+    const qf = {
+      qf1:[rankedTeamName('A', 1), rankedTeamName('B', 3)],
+      qf2:[rankedTeamName('C', 1), rankedTeamName('B', 2)],
+      qf3:[rankedTeamName('B', 1), rankedTeamName('A', 3)],
+      qf4:[rankedTeamName('A', 2), rankedTeamName('C', 2)]
+    };
+    const sf1 = [matchWinner('qf1', qf.qf1), matchWinner('qf2', qf.qf2)];
+    const sf2 = [matchWinner('qf3', qf.qf3), matchWinner('qf4', qf.qf4)];
+    return {
+      qf1:qf.qf1, qf2:qf.qf2, qf3:qf.qf3, qf4:qf.qf4,
+      sf1, sf2,
+      final:[matchWinner('sf1', sf1), matchWinner('sf2', sf2)]
+    };
+  }
+
+  function showKnockoutResult(matchId){
+    const labels = { qf1:'Tứ kết 1', qf2:'Tứ kết 2', qf3:'Tứ kết 3', qf4:'Tứ kết 4', sf1:'Bán kết 1', sf2:'Bán kết 2', final:'Chung kết' };
+    const teams = knockoutTeams()[matchId].map(team=> team || 'Chờ xác định');
+    openResults(labels[matchId], 'Kết quả vòng loại trực tiếp.', resultRow(teams[0], teams[1], knockoutMatches[matchId]));
+  }
+
+  document.querySelectorAll('.group-card[data-group]').forEach(card=>{
+    const open = ()=>{ if(!groupsEditMode) showGroupResults(card.dataset.group); };
+    card.addEventListener('click', open);
+    card.addEventListener('keydown', event=>{ if(event.key === 'Enter' || event.key === ' '){ event.preventDefault(); open(); } });
+  });
+  document.querySelectorAll('.bracket-match[data-match-id]').forEach(match=>{
+    const open = ()=>{ if(!knockoutEditMode) showKnockoutResult(match.dataset.matchId); };
+    match.addEventListener('click', open);
+    match.addEventListener('keydown', event=>{ if(event.key === 'Enter' || event.key === ' '){ event.preventDefault(); open(); } });
+  });
+  document.getElementById('resultsCloseBtn').addEventListener('click', closeResults);
+  resultsOverlay.addEventListener('click', event=>{ if(event.target === resultsOverlay) closeResults(); });
+  document.addEventListener('keydown', event=>{ if(event.key === 'Escape' && resultsOverlay.classList.contains('open')) closeResults(); });
 
   editKnockoutBtn.addEventListener('click', ()=>{
     knockoutEditMode = !knockoutEditMode;
