@@ -327,17 +327,25 @@
   /* ---------- KNOCKOUT BRACKET ---------- */
   .knockout-section{ width:100%; max-width:1180px; margin:0 auto; padding:52px 24px 6px; }
   .knockout-section .section-head{ justify-content:center; }
-  .bracket{ display:grid; grid-template-columns:210px 210px 210px; justify-content:center; gap:70px; align-items:stretch; }
-  .bracket-stage{ display:flex; flex-direction:column; align-items:center; gap:14px; }
-  .bracket-stage-title{ color:var(--pickle-yellow); font-family:'Space Mono', monospace; font-size:11px; letter-spacing:0.08em; text-align:center; text-transform:uppercase; }
-  .bracket-stage.semifinals{ justify-content:space-around; padding:45px 0; }
-  .bracket-stage.finals{ justify-content:center; }
-  .bracket-match{ width:100%; max-width:210px; background:rgba(20,97,90,0.72); border:1px solid rgba(247,244,236,0.16); border-radius:12px; overflow:hidden; }
+  .bracket{ display:grid; grid-template-columns:210px 210px 210px; justify-content:center; gap:70px; align-items:start; }
+  .bracket-stage{ position:relative; height:470px; }
+  .bracket-stage-title{ position:absolute; top:0; left:0; width:100%; color:var(--pickle-yellow); font-family:'Space Mono', monospace; font-size:18px; font-weight:700; letter-spacing:0.06em; line-height:1.2; text-align:center; text-transform:uppercase; }
+  .bracket-stage > .bracket-match,
+  .bracket-stage > .bracket-match.has-next{ position:absolute; left:0; }
+  .bracket-stage > .bracket-match:nth-child(2){ top:58px; }
+  .bracket-stage > .bracket-match:nth-child(3){ top:158px; }
+  .bracket-stage > .bracket-match:nth-child(4){ top:258px; }
+  .bracket-stage > .bracket-match:nth-child(5){ top:358px; }
+  .bracket-stage.semifinals > .bracket-match:nth-child(2){ top:108px; }
+  .bracket-stage.semifinals > .bracket-match:nth-child(3){ top:308px; }
+  .bracket-stage.finals > .bracket-match:nth-child(2){ top:208px; }
+  .bracket-match{ display:grid; grid-template-columns:64px minmax(0, 1fr); width:100%; max-width:210px; background:rgba(20,97,90,0.72); border:1px solid rgba(247,244,236,0.16); border-radius:12px; overflow:hidden; }
   .bracket-match.has-next{ position:relative; }
   .bracket-match.has-next::after{ content:''; position:absolute; z-index:0; top:50%; right:-70px; width:70px; border-top:2px solid rgba(231,210,46,0.65); }
   .bracket-match.has-next::before{ content:attr(data-next); position:absolute; z-index:1; top:calc(50% - 19px); right:-65px; width:60px; color:var(--pickle-yellow); font:9px 'Space Mono', monospace; text-align:center; white-space:nowrap; }
-  .bracket-match-id{ display:block; padding:7px 11px; background:rgba(10,33,30,0.35); color:var(--pickle-yellow); font-family:'Space Mono', monospace; font-size:10px; letter-spacing:0.05em; }
-  .bracket-team{ display:flex; align-items:center; justify-content:space-between; gap:8px; padding:10px 12px; border-top:1px solid rgba(247,244,236,0.1); color:var(--chalk); font-size:13px; font-weight:700; }
+  .bracket-match-id{ grid-row:1 / span 2; display:flex; align-items:center; justify-content:center; padding:8px 6px; background:rgba(10,33,30,0.35); border-right:1px solid rgba(247,244,236,0.16); color:var(--pickle-yellow); font-family:'Space Mono', monospace; font-size:10px; font-weight:700; letter-spacing:0.05em; text-align:center; }
+  .bracket-team{ display:flex; align-items:center; justify-content:space-between; gap:8px; min-width:0; padding:10px 12px; color:var(--chalk); font-size:13px; font-weight:700; }
+  .bracket-team + .bracket-team{ border-top:1px solid rgba(247,244,236,0.1); }
   .bracket-team.placeholder{ color:var(--chalk-dim); font-weight:500; font-style:italic; }
   .bracket-match.final{ border-color:var(--pickle-yellow); }
   .bracket-match.final .bracket-match-id{ background:rgba(231,210,46,0.13); }
@@ -706,8 +714,11 @@
     .groups-section{ padding:40px 24px 6px; }
     .group-grid{ grid-template-columns:1fr; }
     .knockout-section{ padding:40px 24px 6px; }
-    .bracket{ grid-template-columns:1fr; }
-    .bracket-stage.semifinals{ padding:0; }
+    .bracket{ grid-template-columns:1fr; gap:28px; }
+    .bracket-stage{ height:auto; display:flex; flex-direction:column; align-items:center; gap:14px; }
+    .bracket-stage-title,
+    .bracket-stage > .bracket-match,
+    .bracket-stage > .bracket-match.has-next{ position:static; }
     .bracket-match.has-next::after{ display:none; }
     .match-editor{ padding:16px; }
     .match-row{ grid-template-columns:minmax(0, 1fr) 42px 14px 42px minmax(0, 1fr); gap:5px; font-size:11px; }
@@ -1309,7 +1320,39 @@
 
   function defaultTeamName(idx){ return 'Đội #' + (idx + 1); }
 
+  function matchLoser(matchId, matchTeams){
+    const score = knockoutMatches[matchId];
+    if(!score || !matchTeams[0] || !matchTeams[1] || !Number.isFinite(score.a) || !Number.isFinite(score.b) || score.a === score.b) return null;
+    return score.a > score.b ? matchTeams[1] : matchTeams[0];
+  }
+
+  function leaderboardTeams(){
+    const qf = {
+      qf1:[rankedTeamName('A', 1), rankedTeamName('B', 3)],
+      qf2:[rankedTeamName('C', 1), rankedTeamName('B', 2)],
+      qf3:[rankedTeamName('B', 1), rankedTeamName('A', 3)],
+      qf4:[rankedTeamName('A', 2), rankedTeamName('C', 2)]
+    };
+    const sf1 = [matchWinner('qf1', qf.qf1), matchWinner('qf2', qf.qf2)];
+    const sf2 = [matchWinner('qf3', qf.qf3), matchWinner('qf4', qf.qf4)];
+    const final = [matchWinner('sf1', sf1), matchWinner('sf2', sf2)];
+    return [
+      matchWinner('final', final) || 'Chờ kết quả CK',
+      matchLoser('final', final) || 'Chờ kết quả CK',
+      matchLoser('sf1', sf1) || 'Chờ kết quả BK1',
+      matchLoser('sf2', sf2) || 'Chờ kết quả BK2',
+      matchLoser('qf1', qf.qf1) || 'Chờ kết quả TK1',
+      matchLoser('qf2', qf.qf2) || 'Chờ kết quả TK2',
+      matchLoser('qf3', qf.qf3) || 'Chờ kết quả TK3',
+      matchLoser('qf4', qf.qf4) || 'Chờ kết quả TK4',
+      rankedTeamName('A', 4),
+      rankedTeamName('B', 4),
+      rankedTeamName('C', 3)
+    ];
+  }
+
   function renderLeaderboard(){
+    const automaticTeams = leaderboardTeams();
     TIERS.forEach(tier=>{
       const row = document.getElementById(tier.row);
       row.innerHTML = '';
@@ -1317,16 +1360,9 @@
         const idx = tier.start + i;
         const card = document.createElement('div');
         card.className = 'medal-card ' + tier.cls;
-        if(lbEditMode){
-          card.innerHTML =
-            '<span class="medal-emoji">' + tier.emoji + '</span>' +
-            '<input class="team-name-input" data-idx="' + idx + '" type="text" ' +
-            'placeholder="' + escapeHtml(defaultTeamName(idx)) + '" value="' + escapeHtml(teams[idx] || '') + '">';
-        }else{
-          card.innerHTML =
-            '<span class="medal-emoji">' + tier.emoji + '</span>' +
-            '<div class="team-name">' + escapeHtml(teams[idx] || defaultTeamName(idx)) + '</div>';
-        }
+        card.innerHTML =
+          '<span class="medal-emoji">' + tier.emoji + '</span>' +
+          '<div class="team-name">' + escapeHtml(automaticTeams[idx] || defaultTeamName(idx)) + '</div>';
         row.appendChild(card);
       }
     });
@@ -1564,6 +1600,7 @@
       editKnockoutBtn.textContent = '✎ Chỉnh sửa';
       saveKnockoutWrap.style.display = 'none';
       renderKnockout();
+      renderLeaderboard();
       showToast('Đã lưu kết quả vòng loại trực tiếp!');
     }catch(error){
       console.error(error);
@@ -1582,11 +1619,13 @@
       knockoutMatches = {};
     }
     renderKnockout();
+    renderLeaderboard();
   }
 
   db.collection('settings').doc('knockout').onSnapshot((doc)=>{
     if(doc.exists) knockoutMatches = doc.data().matches || {};
     if(!knockoutEditMode) renderKnockout();
+    renderLeaderboard();
   }, (error)=>{
     console.error('Không thể đồng bộ vòng loại trực tiếp:', error);
   });
@@ -1684,6 +1723,7 @@
       editGroupsBtn.textContent = '✎ Chỉnh sửa';
       saveGroupsWrap.style.display = 'none';
       renderGroups();
+      renderLeaderboard();
       showToast('Đã lưu bảng đấu! 🏓');
     }catch(err){
       console.error(err);
@@ -1709,6 +1749,7 @@
       /* chưa có dữ liệu — dùng tên mặc định */
     }
     renderGroups();
+    renderLeaderboard();
   }
 
   db.collection('settings').doc('groups').onSnapshot((doc)=>{
@@ -1719,6 +1760,7 @@
       groupMatches = data.matches || {};
     }
     if(!groupsEditMode) renderGroups();
+    renderLeaderboard();
   }, (err)=>{
     console.error('Không thể đồng bộ bảng đấu:', err);
   });
@@ -1745,7 +1787,8 @@
 
   function updateAdminUI(){
     document.getElementById('openModalBtn').style.display = isAdmin ? 'inline-block' : 'none';
-    document.getElementById('editLeaderboardBtn').style.display = isAdmin ? 'inline-block' : 'none';
+    // BXH được tính từ kết quả các trận, không cho chỉnh tay.
+    document.getElementById('editLeaderboardBtn').style.display = 'none';
     document.getElementById('editGroupsBtn').style.display = isAdmin ? 'inline-block' : 'none';
     document.getElementById('editKnockoutBtn').style.display = isAdmin ? 'inline-block' : 'none';
     if(!isAdmin){
